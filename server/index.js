@@ -12,37 +12,35 @@ const resolvers = {
     Query: {
         info: () => `This is the API of a Hackernews Clone`,
         feed: () => links,
-        link: (parent, args) => {
-            console.log(args.id)
-            let index = links.findIndex(obj => obj.id = args.id)
-            console.log(index)
+        link: (_, {id}) => {
+            let index = links.findIndex(obj => obj.id = id)
             return links[index]
         }
     },
     Mutation: {
-        post: (parent, args) => {
+        post: (_, {url, description}) => {
             const link = {
                 id: `link-${idCount++}`,
-                description: args.description,
-                url: args.url,
+                description: description,
+                url: url,
               }
               links.push(link)
               return link
         },
 
-        updateLink: (parent, args) => {
-            let index = links.findIndex(obj => obj.id = args.id)
+        updateLink: (_, {id, url, description}) => {
+            let index = links.findIndex(obj => obj.id = id)
             let newLink = {
-                id: args.id,
-                url: args.url,
-                description: args.description
+                id: id,
+                url: url,
+                description: description
             }
             links[index] = newLink
             return newLink
         },
 
-        deleteLink: (parent, args) => {
-            let index = links.findIndex(obj => obj.id = args.id)
+        deleteLink: (_, {id}) => {
+            let index = links.findIndex(obj => obj.id = id)
             let link = links[index]
             links.splice(index, 1);
             return link
@@ -51,7 +49,7 @@ const resolvers = {
 }
 
 const server = new GraphQLServer({
-    typeDefs: './src/schema.graphql',
+    typeDefs: './server/schema.graphql',
     resolvers
 })
 
