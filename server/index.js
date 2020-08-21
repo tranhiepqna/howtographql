@@ -1,56 +1,37 @@
 const {GraphQLServer} = require('graphql-yoga')
+const { PrismaClient } = require('@prisma/client')
+const { PubSub } = require('graphql-yoga')
 
-let links = [{
-    id: 'link-0',
-    url: 'www.howtographql.com',
-    description: 'Fullstack tutorial for GraphQL'
-  }]
+const Vote = require('./resolvers/Vote')
+const Query = require('./resolvers/Query')
+const Mutation = require('./resolvers/Mutation')
+const User = require('./resolvers/User')
+const Link = require('./resolvers/Link')
+const Subscription = require('./resolvers/Subscription')
 
-let idCount = links.length
+const prisma = new PrismaClient()
+const pubsub = new PubSub()
+
 
 const resolvers = {
-    Query: {
-        info: () => `This is the API of a Hackernews Clone`,
-        feed: () => links,
-        link: (_, {id}) => {
-            let index = links.findIndex(obj => obj.id = id)
-            return links[index]
-        }
-    },
-    Mutation: {
-        post: (_, {url, description}) => {
-            const link = {
-                id: `link-${idCount++}`,
-                description: description,
-                url: url,
-              }
-              links.push(link)
-              return link
-        },
-
-        updateLink: (_, {id, url, description}) => {
-            let index = links.findIndex(obj => obj.id = id)
-            let newLink = {
-                id: id,
-                url: url,
-                description: description
-            }
-            links[index] = newLink
-            return newLink
-        },
-
-        deleteLink: (_, {id}) => {
-            let index = links.findIndex(obj => obj.id = id)
-            let link = links[index]
-            links.splice(index, 1);
-            return link
-        }
-    }
+    Query,
+    Mutation,
+    Subscription,
+    User,
+    Link,
+    Vote,
 }
 
 const server = new GraphQLServer({
     typeDefs: './server/schema.graphql',
-    resolvers
+    resolvers,
+    context: request => {
+        return {
+          ...request,
+          prisma,
+          pubsub,
+        }
+    }
 })
 
 server.start(() => console.log(`Server is running on http://localhost:4000`))
