@@ -10,6 +10,8 @@ git clone https://github.com/tranhiepqna/howtographql.git
 
 # Installing packages
 npm install
+#or 
+yarn
 ```
 
 
@@ -21,11 +23,9 @@ npm install
 npx prisma migrate save --name="init" --experimental
 
 #Run the command below to apply the migration
-
 npx prisma migrate up --experimental
 
 #Finally, Re-generating PrismaClient
-
 npx prisma generate
 ```
 
